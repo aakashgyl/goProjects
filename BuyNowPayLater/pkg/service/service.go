@@ -3,7 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
-	//log "github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/goProjects/BuyNowPayLater/pkg/merchant"
 	"github.com/goProjects/BuyNowPayLater/pkg/user"
@@ -39,12 +39,13 @@ func GetBPNLServer() BNPLServiceOps {
 func (server *BNPLServer) AddUser(name, email string, limit float32) {
 	newUser := user.GetNewUser(name, email, limit)
 	server.Users[name] = newUser
-	//logrus.Info("User added successfully")
+	log.Infof("User %q added successfully", name)
 }
 
 func (server *BNPLServer) AddMerchant(name string, fee float32) {
 	newMerchant := merchant.GetNewMerchant(name, fee)
 	server.Merchants[name] = newMerchant
+	log.Infof("Merchant %q added successfully", name)
 }
 
 func (server *BNPLServer) NewTransaction(userName, merchantName string, txnAmount float32) error {
@@ -62,18 +63,29 @@ func (server *BNPLServer) NewTransaction(userName, merchantName string, txnAmoun
 
 	err := userData.Purchase(txnAmount)
 	if err != nil {
+		log.Errorf("Purchase of %v by %q from %q failed due to: %v", txnAmount, userName, merchantName, err.Error())
 		return err
 	}
 	merchantData.Purchase(txnAmount)
+
+	log.Infof("Purchase by %q from %q of %v success", userName, merchantName, txnAmount)
 	return nil
 }
 
 func (server *BNPLServer) UpdateMerchantFee(merchantName string, newFee float32) {
 	server.Merchants[merchantName].UpdateMerchantFeePercent(newFee)
+	log.Info("Merchant fee updated")
 }
 
 func (server *BNPLServer) Payback(userName string, amount float32) error {
-	return server.Users[userName].Payback(amount)
+	err := server.Users[userName].Payback(amount)
+	if err != nil {
+		log.Errorf("Payback from %q failed due to: %v", userName, err.Error())
+		return err
+	}
+
+	log.Infof("Received %v from %s", amount, userName)
+	return nil
 }
 
 func (server *BNPLServer) GetMerchantFeeTotal(name string) float32 {

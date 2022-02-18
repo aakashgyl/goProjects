@@ -12,7 +12,7 @@ import (
 )
 
 func main(){
-	fmt.Println("Starting BuyNowPayLater service")
+	fmt.Println("Starting BuyNowPayLater service...")
 	bpnl := service.GetBPNLServer()
 
 	// Add users
@@ -31,6 +31,7 @@ func main(){
 	fmt.Println(bpnl.NewTransaction("u1", "m3", 10))	// error
 
 	// Users at credit limit
+	fmt.Print("Users at credit limit: ")
 	fmt.Println(bpnl.GetUsersAtCreditLimit())
 
 	// More transactions
@@ -38,15 +39,18 @@ func main(){
 	fmt.Println(bpnl.NewTransaction("u3", "m3", 300))	// success
 
 	// Users at credit limit
+	fmt.Print("Users at credit limit: ")
 	fmt.Println(bpnl.GetUsersAtCreditLimit())
 
 	// Report fee
+	fmt.Print("Merchant fee of m3: ")
 	fmt.Println(bpnl.GetMerchantFeeTotal("m3"))
 
 	// Payback
-	fmt.Println(bpnl.Payback("u3", 400))
+	bpnl.Payback("u3", 400)
 
 	// Total dues
+	fmt.Print("Total dues of all users: ")
 	fmt.Println(bpnl.GetTotalDues())
 
 	//cliProcessor(bpnl)
