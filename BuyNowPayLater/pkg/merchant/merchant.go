@@ -1,10 +1,15 @@
 package merchant
 
+import "errors"
+
+var NAME_MISSING_ERROR = errors.New("name is missing in request")
+var NEGATIVE_FEE_ERROR = errors.New("fee should be non-negative")
+
 type MerchantOps interface {
 	GetName() string
 	GetCurrentCommsion() float32
 	GetCommissionPaid() float32
-	UpdateMerchantFeePercent(float32)
+	UpdateMerchantFeePercent(float32) error
 	Purchase(float32)
 }
 
@@ -14,15 +19,27 @@ type Merchant struct {
 	CommissionPaid           float32
 }
 
-func GetNewMerchant(name string, fee float32) MerchantOps {
+func GetNewMerchant(name string, fee float32) (MerchantOps, error) {
+	if name == "" {
+		return nil, NAME_MISSING_ERROR
+	}
+
+	if fee < 0 {
+		return nil, NEGATIVE_FEE_ERROR
+	}
+
 	return &Merchant{
 		Name:                     name,
 		CurrentCommissionPercent: fee,
-	}
+	}, nil
 }
 
-func (m *Merchant) UpdateMerchantFeePercent(fee float32) {
+func (m *Merchant) UpdateMerchantFeePercent(fee float32) error {
+	if fee < 0 {
+		return NEGATIVE_FEE_ERROR
+	}
 	m.CurrentCommissionPercent = fee
+	return nil
 }
 
 func (m *Merchant) Purchase(amount float32) {

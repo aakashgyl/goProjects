@@ -13,11 +13,11 @@ var USER_NOT_FOUND = errors.New("user not found")
 var MERCHANT_NOT_FOUND = errors.New("merchant not found")
 
 type BNPLServiceOps interface {
-	AddUser(name, email string, limit float32)
-	AddMerchant(name string, fee float32)
+	AddUser(name, email string, limit float32) error
+	AddMerchant(name string, fee float32) error
 	NewTransaction(userName, merchantName string, txnAmount float32) error
-	UpdateUserCreditLimit(name string, limit float32)
-	UpdateMerchantFee(merchantName string, newFee float32)
+	UpdateUserCreditLimit(name string, limit float32) error
+	UpdateMerchantFee(merchantName string, newFee float32) error
 	Payback(user string, amount float32) error
 	GetMerchantFeeTotal(name string) float32
 	GetDuesOfUser(name string) float32
@@ -37,16 +37,28 @@ func GetBPNLServer() BNPLServiceOps {
 	}
 }
 
-func (server *BNPLServer) AddUser(name, email string, limit float32) {
-	newUser := user.GetNewUser(name, email, limit)
+func (server *BNPLServer) AddUser(name, email string, limit float32) error {
+	newUser, err := user.GetNewUser(name, email, limit)
+	if err != nil {
+		log.Errorf("User creation failed with error: %s", err.Error())
+		return err
+	}
+
 	server.Users[name] = newUser
 	log.Infof("User %q added successfully", name)
+	return nil
 }
 
-func (server *BNPLServer) AddMerchant(name string, fee float32) {
-	newMerchant := merchant.GetNewMerchant(name, fee)
+func (server *BNPLServer) AddMerchant(name string, fee float32) error {
+	newMerchant, err := merchant.GetNewMerchant(name, fee)
+	if err != nil {
+		log.Errorf("Merchant creation failed with error: %s", err.Error())
+		return err
+	}
+
 	server.Merchants[name] = newMerchant
 	log.Infof("Merchant %q added successfully", name)
+	return nil
 }
 
 func (server *BNPLServer) NewTransaction(userName, merchantName string, txnAmount float32) error {
@@ -73,14 +85,26 @@ func (server *BNPLServer) NewTransaction(userName, merchantName string, txnAmoun
 	return nil
 }
 
-func (server *BNPLServer) UpdateUserCreditLimit(name string, limit float32) {
-	server.Users[name].UpdateCreditLimit(limit)
+func (server *BNPLServer) UpdateUserCreditLimit(name string, limit float32) error {
+	err := server.Users[name].UpdateCreditLimit(limit)
+	if err != nil {
+		log.Errorf("failed to update credit limit for %q due to %v", name, err.Error())
+		return err
+	}
+
 	log.Info("User credit limit updated")
+	return nil
 }
 
-func (server *BNPLServer) UpdateMerchantFee(name string, newFee float32) {
-	server.Merchants[name].UpdateMerchantFeePercent(newFee)
+func (server *BNPLServer) UpdateMerchantFee(name string, newFee float32) error {
+	err := server.Merchants[name].UpdateMerchantFeePercent(newFee)
+	if err != nil {
+		log.Errorf("failed to update merchant fee due to: ", err.Error())
+		return err
+	}
+
 	log.Info("Merchant fee updated")
+	return nil
 }
 
 func (server *BNPLServer) Payback(userName string, amount float32) error {

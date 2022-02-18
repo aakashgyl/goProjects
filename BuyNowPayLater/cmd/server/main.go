@@ -47,7 +47,7 @@ func main() {
 	fmt.Println(bpnl.GetMerchantFeeTotal("m3"))
 
 	// Payback
-	bpnl.Payback("u3", 400)
+	fmt.Println(bpnl.Payback("u3", 400))
 
 	// Total dues
 	fmt.Print("Total dues of all users: ")
@@ -71,11 +71,11 @@ func cliProcessor(bpnl service.BNPLServiceOps) {
 		switch {
 		case strings.HasPrefix(line, "new user"):
 			value, _ := strconv.ParseFloat(data[4], 32)
-			bpnl.AddUser(data[2], data[3], float32(value))
+			fmt.Println(bpnl.AddUser(data[2], data[3], float32(value)))
 
 		case strings.HasPrefix(line, "new merchant"):
 			value, _ := strconv.ParseFloat(data[3], 32)
-			bpnl.AddMerchant(data[2], float32(value))
+			fmt.Println(bpnl.AddMerchant(data[2], float32(value)))
 
 		case strings.HasPrefix(line, "new txn"):
 			value, _ := strconv.ParseFloat(data[4], 32)
@@ -83,7 +83,7 @@ func cliProcessor(bpnl service.BNPLServiceOps) {
 
 		case strings.HasPrefix(line, "update user"):
 			value, _ := strconv.ParseFloat(data[3], 32)
-			bpnl.UpdateUserCreditLimit(data[2], float32(value))
+			fmt.Println(bpnl.UpdateUserCreditLimit(data[2], float32(value)))
 
 		case strings.HasPrefix(line, "update merchant"):
 			value, _ := strconv.ParseFloat(data[3], 32)
