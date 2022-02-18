@@ -2,10 +2,13 @@ package user
 
 import "errors"
 
+var CREDIT_LIMIT_HIT = errors.New("rejected! (reason: credit limit)")
+var EXCESS_PAYBACK_ERROR = errors.New("payback is more than credit usage")
+
 type UserOps interface {
 	GetName() string
 	Purchase(float32) error
-	Payback(float32)
+	Payback(float32) error
 	GetRemainingCredit() float32
 	GetCreditLimit() float32
 }
@@ -32,14 +35,18 @@ func (u *User) GetName() string {
 
 func (u *User) Purchase(amount float32) error {
 	if u.GetRemainingCredit() < amount {
-		return errors.New("rejected! (reason: credit limit)")
+		return CREDIT_LIMIT_HIT
 	}
 	u.CreditUsed = u.CreditUsed + amount
 	return nil
 }
 
-func (u *User) Payback(amount float32) {
+func (u *User) Payback(amount float32) error {
+	if amount > u.CreditUsed {
+		return EXCESS_PAYBACK_ERROR
+	}
 	u.CreditUsed = u.CreditUsed - amount
+	return nil
 }
 
 func (u *User) GetRemainingCredit() float32 {

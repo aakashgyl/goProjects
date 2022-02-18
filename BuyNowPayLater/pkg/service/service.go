@@ -1,18 +1,24 @@
 package service
 
 import (
+	"errors"
 	"fmt"
+	//log "github.com/sirupsen/logrus"
+
 	"github.com/goProjects/BuyNowPayLater/pkg/merchant"
 	"github.com/goProjects/BuyNowPayLater/pkg/user"
 )
 
+var USER_NOT_FOUND = errors.New("user not found")
+var MERCHANT_NOT_FOUND = errors.New("merchant not found")
+
 type BNPLServiceOps interface {
 	AddUser(name, email string, limit float32)
 	AddMerchant(name string, fee float32)
-	NewTransaction(user, merchant string, txnAmount float32)
-	UpdateMerchantFee(merchant string, newFee float32)
-	Payback(user string, amount float32)
-	GetMerchantFeeTotal() float32
+	NewTransaction(userName, merchantName string, txnAmount float32) error
+	UpdateMerchantFee(merchantName string, newFee float32)
+	Payback(user string, amount float32) error
+	GetMerchantFeeTotal(name string) float32
 	GetDuesOfUser(name string) float32
 	GetUsersAtCreditLimit() []string
 	GetTotalDues() []string
@@ -33,6 +39,7 @@ func GetBPNLServer() BNPLServiceOps {
 func (server *BNPLServer) AddUser(name, email string, limit float32) {
 	newUser := user.GetNewUser(name, email, limit)
 	server.Users[name] = newUser
+	//logrus.Info("User added successfully")
 }
 
 func (server *BNPLServer) AddMerchant(name string, fee float32) {
@@ -40,28 +47,37 @@ func (server *BNPLServer) AddMerchant(name string, fee float32) {
 	server.Merchants[name] = newMerchant
 }
 
-func (server *BNPLServer) NewTransaction(user, merchant string, txnAmount float32) {
-	userData := server.Users[user]
-	merchantData := server.Merchants[merchant]
+func (server *BNPLServer) NewTransaction(userName, merchantName string, txnAmount float32) error {
+	var userData user.UserOps
+	var merchantData merchant.MerchantOps
+	var ok bool
 
-	userData.Purchase(txnAmount)
+	if userData, ok = server.Users[userName]; !ok {
+		return USER_NOT_FOUND
+	}
+
+	if merchantData, ok = server.Merchants[merchantName]; !ok {
+		return MERCHANT_NOT_FOUND
+	}
+
+	err := userData.Purchase(txnAmount)
+	if err != nil {
+		return err
+	}
 	merchantData.Purchase(txnAmount)
+	return nil
 }
 
 func (server *BNPLServer) UpdateMerchantFee(merchantName string, newFee float32) {
 	server.Merchants[merchantName].UpdateMerchantFeePercent(newFee)
 }
 
-func (server *BNPLServer) Payback(userName string, amount float32) {
-	server.Users[userName].Payback(amount)
+func (server *BNPLServer) Payback(userName string, amount float32) error {
+	return server.Users[userName].Payback(amount)
 }
 
-func (server *BNPLServer) GetMerchantFeeTotal() float32 {
-	var totalFee float32
-	for _, merchantData := range server.Merchants {
-		totalFee = totalFee + merchantData.GetCommissionPaid()
-	}
-	return totalFee
+func (server *BNPLServer) GetMerchantFeeTotal(name string) float32 {
+	return server.Merchants[name].GetCommissionPaid()
 }
 
 func (server *BNPLServer) GetDuesOfUser(userName string) float32 {
