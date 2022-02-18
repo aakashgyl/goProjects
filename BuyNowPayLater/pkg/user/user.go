@@ -3,12 +3,14 @@ package user
 import "errors"
 
 type UserOps interface {
+	GetName() string
 	Purchase(float32) error
 	Payback(float32)
 	GetRemainingCredit() float32
+	GetCreditLimit() float32
 }
 
-type user struct {
+type User struct {
 	Name string
 	Email string
 	CreditLimit float32
@@ -16,7 +18,7 @@ type user struct {
 }
 
 func GetNewUser(name, email string, creditLimit float32) UserOps {
-	return &user{
+	return &User{
 		Name:        name,
 		Email:       email,
 		CreditLimit: creditLimit,
@@ -24,7 +26,11 @@ func GetNewUser(name, email string, creditLimit float32) UserOps {
 	}
 }
 
-func (u *user) Purchase(amount float32) error {
+func (u *User) GetName() string {
+	return u.Name
+}
+
+func (u *User) Purchase(amount float32) error {
 	if u.GetRemainingCredit() < amount {
 		return errors.New("rejected! (reason: credit limit)")
 	}
@@ -32,10 +38,14 @@ func (u *user) Purchase(amount float32) error {
 	return nil
 }
 
-func (u *user) Payback(amount float32) {
+func (u *User) Payback(amount float32) {
 	u.CreditUsed = u.CreditUsed - amount
 }
 
-func (u *user) GetRemainingCredit() float32 {
+func (u *User) GetRemainingCredit() float32 {
 	return u.CreditLimit - u.CreditUsed
+}
+
+func (u *User) GetCreditLimit() float32 {
+	return u.CreditLimit
 }
