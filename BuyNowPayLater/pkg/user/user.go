@@ -7,6 +7,7 @@ var EXCESS_PAYBACK_ERROR = errors.New("payback is more than credit usage")
 
 type UserOps interface {
 	GetName() string
+	UpdateCreditLimit(float32)
 	Purchase(float32) error
 	Payback(float32) error
 	GetRemainingCredit() float32
@@ -14,10 +15,10 @@ type UserOps interface {
 }
 
 type User struct {
-	Name string
-	Email string
+	Name        string
+	Email       string
 	CreditLimit float32
-	CreditUsed float32
+	CreditUsed  float32
 }
 
 func GetNewUser(name, email string, creditLimit float32) UserOps {
@@ -31,6 +32,10 @@ func GetNewUser(name, email string, creditLimit float32) UserOps {
 
 func (u *User) GetName() string {
 	return u.Name
+}
+
+func (u *User) UpdateCreditLimit(f float32) {
+	u.CreditLimit = f
 }
 
 func (u *User) Purchase(amount float32) error {

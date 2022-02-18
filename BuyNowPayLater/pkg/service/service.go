@@ -16,6 +16,7 @@ type BNPLServiceOps interface {
 	AddUser(name, email string, limit float32)
 	AddMerchant(name string, fee float32)
 	NewTransaction(userName, merchantName string, txnAmount float32) error
+	UpdateUserCreditLimit(name string, limit float32)
 	UpdateMerchantFee(merchantName string, newFee float32)
 	Payback(user string, amount float32) error
 	GetMerchantFeeTotal(name string) float32
@@ -25,13 +26,13 @@ type BNPLServiceOps interface {
 }
 
 type BNPLServer struct {
-	Users map[string]user.UserOps
+	Users     map[string]user.UserOps
 	Merchants map[string]merchant.MerchantOps
 }
 
 func GetBPNLServer() BNPLServiceOps {
 	return &BNPLServer{
-		Users: make(map[string]user.UserOps),
+		Users:     make(map[string]user.UserOps),
 		Merchants: make(map[string]merchant.MerchantOps),
 	}
 }
@@ -72,8 +73,13 @@ func (server *BNPLServer) NewTransaction(userName, merchantName string, txnAmoun
 	return nil
 }
 
-func (server *BNPLServer) UpdateMerchantFee(merchantName string, newFee float32) {
-	server.Merchants[merchantName].UpdateMerchantFeePercent(newFee)
+func (server *BNPLServer) UpdateUserCreditLimit(name string, limit float32) {
+	server.Users[name].UpdateCreditLimit(limit)
+	log.Info("User credit limit updated")
+}
+
+func (server *BNPLServer) UpdateMerchantFee(name string, newFee float32) {
+	server.Merchants[name].UpdateMerchantFeePercent(newFee)
 	log.Info("Merchant fee updated")
 }
 
@@ -114,10 +120,10 @@ func (server *BNPLServer) GetTotalDues() []string {
 	for _, userData := range server.Users {
 		dues := userData.GetCreditLimit() - userData.GetRemainingCredit()
 		if dues != 0 {
-			totalDuesList = append(totalDuesList, userData.GetName() + ": " + fmt.Sprint(dues))
+			totalDuesList = append(totalDuesList, userData.GetName()+": "+fmt.Sprint(dues))
 			total = total + dues
 		}
 	}
-	totalDuesList = append(totalDuesList, "Total:" + fmt.Sprint(total))
+	totalDuesList = append(totalDuesList, "Total:"+fmt.Sprint(total))
 	return totalDuesList
 }

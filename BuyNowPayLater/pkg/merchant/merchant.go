@@ -9,14 +9,14 @@ type MerchantOps interface {
 }
 
 type Merchant struct {
-	Name string
+	Name                     string
 	CurrentCommissionPercent float32
-	CommissionPaid float32
+	CommissionPaid           float32
 }
 
 func GetNewMerchant(name string, fee float32) MerchantOps {
 	return &Merchant{
-		Name:       name,
+		Name:                     name,
 		CurrentCommissionPercent: fee,
 	}
 }
@@ -26,7 +26,7 @@ func (m *Merchant) UpdateMerchantFeePercent(fee float32) {
 }
 
 func (m *Merchant) Purchase(amount float32) {
-	m.CommissionPaid = m.CommissionPaid + amount * m.CurrentCommissionPercent/100
+	m.CommissionPaid = m.CommissionPaid + amount*m.CurrentCommissionPercent/100
 }
 
 func (m *Merchant) GetName() string {

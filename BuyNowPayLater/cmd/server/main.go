@@ -11,7 +11,7 @@ import (
 	"github.com/goProjects/BuyNowPayLater/pkg/service"
 )
 
-func main(){
+func main() {
 	fmt.Println("Starting BuyNowPayLater service...")
 	bpnl := service.GetBPNLServer()
 
@@ -26,17 +26,17 @@ func main(){
 	bpnl.AddMerchant("m3", 1.25)
 
 	// New transactions
-	fmt.Println(bpnl.NewTransaction("u2", "m1", 500))	// error
-	fmt.Println(bpnl.NewTransaction("u1", "m2", 300))	// success
-	fmt.Println(bpnl.NewTransaction("u1", "m3", 10))	// error
+	fmt.Println(bpnl.NewTransaction("u2", "m1", 500)) // error
+	fmt.Println(bpnl.NewTransaction("u1", "m2", 300)) // success
+	fmt.Println(bpnl.NewTransaction("u1", "m3", 10))  // error
 
 	// Users at credit limit
 	fmt.Print("Users at credit limit: ")
 	fmt.Println(bpnl.GetUsersAtCreditLimit())
 
 	// More transactions
-	fmt.Println(bpnl.NewTransaction("u3", "m3", 200))	// success
-	fmt.Println(bpnl.NewTransaction("u3", "m3", 300))	// success
+	fmt.Println(bpnl.NewTransaction("u3", "m3", 200)) // success
+	fmt.Println(bpnl.NewTransaction("u3", "m3", 300)) // success
 
 	// Users at credit limit
 	fmt.Print("Users at credit limit: ")
@@ -80,6 +80,10 @@ func cliProcessor(bpnl service.BNPLServiceOps) {
 		case strings.HasPrefix(line, "new txn"):
 			value, _ := strconv.ParseFloat(data[4], 32)
 			fmt.Println(bpnl.NewTransaction(data[2], data[3], float32(value)))
+
+		case strings.HasPrefix(line, "update user"):
+			value, _ := strconv.ParseFloat(data[3], 32)
+			bpnl.UpdateUserCreditLimit(data[2], float32(value))
 
 		case strings.HasPrefix(line, "update merchant"):
 			value, _ := strconv.ParseFloat(data[3], 32)
