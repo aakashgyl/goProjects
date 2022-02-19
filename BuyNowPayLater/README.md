@@ -10,7 +10,7 @@ while paying back to the merchant..
 2. All users get onboarded with a credit limit, beyond which they can't transact.
    - If a transaction value crosses this credit limit, we reject the transaction.
    
-##Use Cases
+## Use Cases
 There are various use cases our service is intended to fulfil
 - allow merchants to be onboarded with the fee
 - allow merchants fee to be changed
