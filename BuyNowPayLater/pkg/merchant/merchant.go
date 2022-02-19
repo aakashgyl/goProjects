@@ -15,7 +15,7 @@ type MerchantOps interface {
 
 type Merchant struct {
 	Name                     string
-	Email string
+	Email                    string
 	CurrentCommissionPercent float32
 	CommissionPaid           float32
 }
@@ -31,7 +31,7 @@ func GetNewMerchant(name, email string, fee float32) (MerchantOps, error) {
 
 	return &Merchant{
 		Name:                     name,
-		Email: email,
+		Email:                    email,
 		CurrentCommissionPercent: fee,
 	}, nil
 }

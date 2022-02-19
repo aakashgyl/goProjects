@@ -6,9 +6,9 @@ import (
 
 func TestGetNewMerchant(t *testing.T) {
 	type args struct {
-		name string
+		name  string
 		email string
-		fee  float32
+		fee   float32
 	}
 	tests := []struct {
 		name    string
@@ -18,18 +18,18 @@ func TestGetNewMerchant(t *testing.T) {
 		{
 			name: "valid details",
 			args: args{
-				name: "user1",
+				name:  "user1",
 				email: "user1@gmail.com",
-				fee:  2.5,
+				fee:   2.5,
 			},
 			wantErr: false,
 		},
 		{
 			name: "invalid details: name missing",
 			args: args{
-				name: "",
+				name:  "",
 				email: "user1@gmail.com",
-				fee:  2,
+				fee:   2,
 			},
 			wantErr: true,
 		},
@@ -65,21 +65,21 @@ func TestGetNewMerchant(t *testing.T) {
 
 func TestMerchant_GetCommissionPaid(t *testing.T) {
 	type args struct {
-		name string
+		name  string
 		email string
-		fee  float32
+		fee   float32
 	}
 	tests := []struct {
-		name    string
-		args    args
+		name       string
+		args       args
 		commission float32
 	}{
 		{
 			name: "valid details",
 			args: args{
-				name: "user1",
+				name:  "user1",
 				email: "user1@gmail.com",
-				fee:  2.5,
+				fee:   2.5,
 			},
 			commission: 0,
 		},
@@ -97,30 +97,30 @@ func TestMerchant_GetCommissionPaid(t *testing.T) {
 
 func TestMerchant_GetCurrentCommsion(t *testing.T) {
 	type args struct {
-		name string
+		name  string
 		email string
-		fee  float32
+		fee   float32
 	}
 
 	tests := []struct {
-		name    string
-		args    args
+		name              string
+		args              args
 		updatedCommission float32
 	}{
 		{
 			name: "valid details",
 			args: args{
-				name: "user1",
+				name:  "user1",
 				email: "user1@gmail.com",
-				fee:  2.5,
+				fee:   2.5,
 			},
 		},
 		{
 			name: "updated commission",
 			args: args{
-				name: "user1",
+				name:  "user1",
 				email: "user1@gmail.com",
-				fee:  2.5,
+				fee:   2.5,
 			},
 			updatedCommission: 3,
 		},
@@ -145,20 +145,20 @@ func TestMerchant_GetCurrentCommsion(t *testing.T) {
 
 func TestMerchant_GetName(t *testing.T) {
 	type args struct {
-		name string
+		name  string
 		email string
-		fee  float32
+		fee   float32
 	}
 	tests := []struct {
-		name    string
-		args    args
+		name string
+		args args
 	}{
 		{
 			name: "valid details",
 			args: args{
-				name: "user1",
+				name:  "user1",
 				email: "user1@gmail.com",
-				fee:  2.5,
+				fee:   2.5,
 			},
 		},
 	}
@@ -175,24 +175,24 @@ func TestMerchant_GetName(t *testing.T) {
 
 func TestMerchant_Purchase(t *testing.T) {
 	type args struct {
-		name string
+		name  string
 		email string
-		fee  float32
+		fee   float32
 	}
 	tests := []struct {
-		name    string
-		args    args
-		amount float32
+		name           string
+		args           args
+		amount         float32
 		commissionPaid float32
 	}{
 		{
 			name: "valid details",
 			args: args{
-				name: "user1",
+				name:  "user1",
 				email: "user1@gmail.com",
-				fee:  5,
+				fee:   5,
 			},
-			amount: 2000,
+			amount:         2000,
 			commissionPaid: 100,
 		},
 	}
@@ -210,35 +210,35 @@ func TestMerchant_Purchase(t *testing.T) {
 
 func TestMerchant_UpdateMerchantFeePercent(t *testing.T) {
 	type args struct {
-		name string
+		name  string
 		email string
-		fee  float32
+		fee   float32
 	}
 	tests := []struct {
-		name    string
-		args    args
+		name      string
+		args      args
 		updateFee float32
-		wantErr bool
+		wantErr   bool
 	}{
 		{
 			name: "valid details",
 			args: args{
-				name: "user1",
+				name:  "user1",
 				email: "user1@gmail.com",
-				fee:  2.5,
+				fee:   2.5,
 			},
 			updateFee: 5,
-			wantErr: false,
+			wantErr:   false,
 		},
 		{
 			name: "negative fee",
 			args: args{
-				name: "user1",
+				name:  "user1",
 				email: "user1@gmail.com",
-				fee:  2.5,
+				fee:   2.5,
 			},
 			updateFee: -5,
-			wantErr: true,
+			wantErr:   true,
 		},
 	}
 

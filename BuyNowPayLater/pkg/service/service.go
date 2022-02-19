@@ -9,6 +9,8 @@ import (
 	"github.com/goProjects/BuyNowPayLater/pkg/user"
 )
 
+var USER_ALREADY_EXISTS = errors.New("user already exists")
+var MERCHANT_ALREADY_EXISTS = errors.New("merchant already exists")
 var USER_NOT_FOUND = errors.New("user not found")
 var MERCHANT_NOT_FOUND = errors.New("merchant not found")
 
@@ -38,6 +40,10 @@ func GetBPNLServer() BNPLServiceOps {
 }
 
 func (server *BNPLServer) AddUser(name, email string, limit float32) error {
+	if _, ok := server.Users[name]; ok {
+		return USER_ALREADY_EXISTS
+	}
+
 	newUser, err := user.GetNewUser(name, email, limit)
 	if err != nil {
 		log.Errorf("User creation failed with error: %s", err.Error())
@@ -50,6 +56,10 @@ func (server *BNPLServer) AddUser(name, email string, limit float32) error {
 }
 
 func (server *BNPLServer) AddMerchant(name, email string, fee float32) error {
+	if _, ok := server.Merchants[name]; ok {
+		return MERCHANT_ALREADY_EXISTS
+	}
+
 	newMerchant, err := merchant.GetNewMerchant(name, email, fee)
 	if err != nil {
 		log.Errorf("Merchant creation failed with error: %s", err.Error())
@@ -99,7 +109,7 @@ func (server *BNPLServer) UpdateUserCreditLimit(name string, limit float32) erro
 func (server *BNPLServer) UpdateMerchantFee(name string, newFee float32) error {
 	err := server.Merchants[name].UpdateMerchantFeePercent(newFee)
 	if err != nil {
-		log.Errorf("failed to update merchant fee due to: ", err.Error())
+		log.Errorf("failed to update merchant fee due to: %s", err.Error())
 		return err
 	}
 
