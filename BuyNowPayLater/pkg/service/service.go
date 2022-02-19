@@ -14,7 +14,7 @@ var MERCHANT_NOT_FOUND = errors.New("merchant not found")
 
 type BNPLServiceOps interface {
 	AddUser(name, email string, limit float32) error
-	AddMerchant(name string, fee float32) error
+	AddMerchant(name, email string, fee float32) error
 	NewTransaction(userName, merchantName string, txnAmount float32) error
 	UpdateUserCreditLimit(name string, limit float32) error
 	UpdateMerchantFee(merchantName string, newFee float32) error
@@ -49,8 +49,8 @@ func (server *BNPLServer) AddUser(name, email string, limit float32) error {
 	return nil
 }
 
-func (server *BNPLServer) AddMerchant(name string, fee float32) error {
-	newMerchant, err := merchant.GetNewMerchant(name, fee)
+func (server *BNPLServer) AddMerchant(name, email string, fee float32) error {
+	newMerchant, err := merchant.GetNewMerchant(name, email, fee)
 	if err != nil {
 		log.Errorf("Merchant creation failed with error: %s", err.Error())
 		return err

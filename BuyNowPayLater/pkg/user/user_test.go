@@ -61,12 +61,14 @@ func TestGetNewUser(t *testing.T) {
 				t.Fail()
 			}
 
-			if user.GetName() != tt.args.name {
-				t.Error("Name mismatch error")
-			}
+			if err == nil {
+				if user.GetName() != tt.args.name {
+					t.Error("Name mismatch error")
+				}
 
-			if user.GetCreditLimit() != tt.args.creditLimit {
-				t.Errorf("Credit limit mismatch error")
+				if user.GetCreditLimit() != tt.args.creditLimit {
+					t.Errorf("Credit limit mismatch error")
+				}
 			}
 		})
 	}

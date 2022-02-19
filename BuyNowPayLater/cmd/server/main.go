@@ -21,9 +21,9 @@ func main() {
 	bpnl.AddUser("u3", "u3@users.com", 500)
 
 	// Add merchants
-	bpnl.AddMerchant("m1", 0.5)
-	bpnl.AddMerchant("m2", 1.5)
-	bpnl.AddMerchant("m3", 1.25)
+	bpnl.AddMerchant("m1", "m1@gmail.com", 0.5)
+	bpnl.AddMerchant("m2", "m2@gmail.com",1.5)
+	bpnl.AddMerchant("m3", "m3@gmail.com",1.25)
 
 	// New transactions
 	fmt.Println(bpnl.NewTransaction("u2", "m1", 500)) // error
@@ -74,8 +74,8 @@ func cliProcessor(bpnl service.BNPLServiceOps) {
 			fmt.Println(bpnl.AddUser(data[2], data[3], float32(value)))
 
 		case strings.HasPrefix(line, "new merchant"):
-			value, _ := strconv.ParseFloat(data[3], 32)
-			fmt.Println(bpnl.AddMerchant(data[2], float32(value)))
+			value, _ := strconv.ParseFloat(data[4], 32)
+			fmt.Println(bpnl.AddMerchant(data[2], data[3], float32(value)))
 
 		case strings.HasPrefix(line, "new txn"):
 			value, _ := strconv.ParseFloat(data[4], 32)

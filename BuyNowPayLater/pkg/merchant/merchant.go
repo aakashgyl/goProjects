@@ -15,11 +15,12 @@ type MerchantOps interface {
 
 type Merchant struct {
 	Name                     string
+	Email string
 	CurrentCommissionPercent float32
 	CommissionPaid           float32
 }
 
-func GetNewMerchant(name string, fee float32) (MerchantOps, error) {
+func GetNewMerchant(name, email string, fee float32) (MerchantOps, error) {
 	if name == "" {
 		return nil, NAME_MISSING_ERROR
 	}
@@ -30,6 +31,7 @@ func GetNewMerchant(name string, fee float32) (MerchantOps, error) {
 
 	return &Merchant{
 		Name:                     name,
+		Email: email,
 		CurrentCommissionPercent: fee,
 	}, nil
 }
